@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  web:
+    expose:
+      - "8080"
+    ports:
+      - "127.0.0.1:8080:8080"
+    image: "ubuntu:jammy"
+    command: bash -c "/run_jcbdemo.sh"
+#    command: bash -c "while true; do sleep 1; done"
+    volumes:
+      - ./run_jcbdemo.sh:/run_jcbdemo.sh
