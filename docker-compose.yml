@@ -7,6 +7,6 @@ services:
       - "127.0.0.1:8080:8080"
     image: "ubuntu:jammy"
     command: bash -c "/run_jcbdemo.sh"
-#    command: bash -c "while true; do sleep 1; done"
     volumes:
+      - ./jcb_main/:/JCBDemo/
       - ./run_jcbdemo.sh:/run_jcbdemo.sh

@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  tasks:
+    - name: create directory
+      ansible.builtin.file:
+        path: ./jcb_main/
+        state: directory
+        mode: 0755
+          #    - name: remove repo
+      #      ansible.builtin.file:
+        #        path: ./jcb_main/main.py
+          #        state: absent
+    - name: clone repository to edit main.py
+      ansible.builtin.git:
+        repo: 'https://github.com/SheljaRajan/JCBDemo.git'
+        dest: ./jcb_main/
+        force: yes
+    - name: edit ip address
+      ansible.builtin.lineinfile:
+        path: ./jcb_main/main.py
+        regex: 'app\.run'
+        line: "     app.run(debug=True, host='0.0.0.0', port=8080)"
+    - name: run docker-compose
+      ansible.builtin.command: docker-compose up -d
+      become: yes
