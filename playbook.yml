@@ -1,68 +1,20 @@
 ---
-#- name: initialise dynamic docker
 - hosts: localhost
   tasks:
-    - name: remove directory
-      ansible.builtin.file:
-        path: ./jcb_main/
-        state: absent
-      become: yes
-    - name: create directory
-      ansible.builtin.file:
-        path: ./jcb_main/
-        state: directory
-        mode: 0755
-    - name: clone repository to edit main.py
-      ansible.builtin.git:
-        repo: 'https://github.com/SheljaRajan/JCBDemo.git'
-        dest: ./jcb_main/
-        force: yes
-    - name: add config file reader header
-      ansible.builtin.lineinfile:
-        path: ./jcb_main/main.py
-        line: 'import configparser'
-        insertbefore: BOF
-    - name: edit ip address
-      ansible.builtin.lineinfile:
-        path: ./jcb_main/main.py
-        regex: 'app\.run'
-        line: "     app.run(debug=True, host='0.0.0.0', port=8080)"
-    - name: replace set data line
-      ansible.builtin.lineinfile:
-        path: ./jcb_main/main.py
-        regex: 'data = np\.random'
-        line: "    data = np.random.randint(0, 100, size=int(config['DataTotal']['JCBDemo']))"
-    - name: add several lines
-      ansible.builtin.lineinfile:
-        path: ./jcb_main/main.py
-        insertbefore: 'data = np\.random'
-        line: "{{ item }}"
-      loop:
-        - "    config = configparser.ConfigParser()"
-        - "    config.sections()"
-        - "    config.read('config.ini')"
-#    - name: remove and replace 
-#    - name: add and edit main.py to access config
-#      ansible.builtin.blockinfile:
-#        path: ./jcb_main/main.py
-#        marker: ""
-#        marker_begin: " data = np.random.randint(0, 100, size=1000)"
-#        marker_end: " df = pd.DataFrame(data, columns=['a'])"
-#        block: |-
-#          config = configparser.ConfigParser()
-#          config.sections()
-#          config.read('config.ini')
-#          data = np.random.randint(0, 100, size=int(config['DataTotal']['JCBDemo']))
-#        state: present
-    - name: create config
+    - name: check if config exists
+      stat:
+        path: ./config.ini
+      register: config_exists
+    - name: create config if not existing
       ansible.builtin.blockinfile:
-        path: ./jcb_main/config.ini
+        path: ./config.ini
         create: yes
         marker: ""
         block: |
           [DataTotal]
-          JCBDemo=20
+          JCBDemo=1000
         mode: 755
+      when: config_exists.stat.exists == False
       become: yes
     - name: run docker-compose
       ansible.builtin.command: docker-compose up -d

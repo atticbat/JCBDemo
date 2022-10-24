@@ -1,12 +1,30 @@
 version: "3.9"
+
+#x-shared-repo:
+#  &shared-repo
+#  type: bind
+#  source: ./jcb_main/
+#  target: /JCBDemo/
+
 services:
-  web:
-    expose:
-      - "8080"
+  dynamic:
     ports:
-      - "127.0.0.1:8080:8080"
+      - "8081:8081"
     image: "ubuntu:jammy"
-    command: bash -c "/run_jcbdemo.sh"
+    command: bash -c "/run_jcbdynamic.sh"
     volumes:
-      - ./jcb_main/:/JCBDemo/
-      - ./run_jcbdemo.sh:/run_jcbdemo.sh
+      - ./run_jcbdynamic.sh:/run_jcbdynamic.sh
+      - ./config.ini:/config.ini
+      - ./jcb_dynamic/:/JCBDemo/
+#      - <<: *shared-repo
+  static:
+    ports:
+      - "8080:8080"
+    expose:
+      - "8081"
+    image: "ubuntu:jammy"
+    command: bash -c "/run_jcbstatic.sh"
+    volumes:
+      - ./run_jcbstatic.sh:/run_jcbstatic.sh
+      - ./jcb_static/:JCBDemo/
+#      - <<: *shared-repo
