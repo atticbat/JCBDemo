@@ -15,5 +15,6 @@ def get_df():
         df = pd.DataFrame(data, columns=['a'])
         df['b'] = df.mod(10)
         generatedDataFrame = df.to_json(orient='records')
-        time.sleep(0.5)
+        time.sleep(0.1)
     return generatedDataFrame
+#no idea how to loop this to stop this container from closing
