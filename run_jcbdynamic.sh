@@ -7,4 +7,4 @@ cd JCBDemo
 python -m venv venv
 bash venv/bin/activate
 python -m pip install -r requirements.txt
-python dynamic.py
+python main.py

@@ -26,9 +26,13 @@
 
       function plotDataFrame(){
          $.ajax({
-          url:'/data',
+          url:'http://localhost:8081/data',
           type:'GET',
           dataType: 'JSON',
+	  xhrFields: {
+       		withCredentials: true
+    	  },
+    	  crossDomain: true,
           success: function(data)
           {
               x = [], y = []
