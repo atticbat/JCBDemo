@@ -1,0 +1,13 @@
+---
+- hosts: 172.25.0.2 
+  vars_prompt:
+    - name: node_count
+      prompt: enter desired amount of generated nodes (type -1 to exit prompt)
+      default: 1000
+      private: no
+  tasks:
+    - name: edit ini file
+      ansible.builtin.lineinfile:
+        path: ./config.ini
+        regex: "^JCBDemo="
+        line: 'JCBDemo={{ node_count }}'
