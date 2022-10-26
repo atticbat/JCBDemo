@@ -1,13 +1,24 @@
 ---
-- hosts: 172.25.0.2 
+- hosts: localhost 
   vars_prompt:
     - name: node_count
-      prompt: enter desired amount of generated nodes (type -1 to exit prompt)
+      prompt: enter desired amount of generated nodes
       default: 1000
       private: no
   tasks:
-    - name: edit ini file
+    - name: create temp config
+      ansible.builtin.shell:
+        cmd: cat ./volumes/config.ini > tempconfig.ini
+    - name: edit temp config
       ansible.builtin.lineinfile:
-        path: ./config.ini
-        regex: "^JCBDemo="
-        line: 'JCBDemo={{ node_count }}'
+        path: ./volumes/config.ini
+        regexp: '^JCBDemo='
+        line: JCBDemo={{ node_count }}
+    - name: overwrite old config
+      shell: bash "./scripts/overwrite_config.sh"
+      become: yes
+    - name: remove temp conf
+      ansible.builtin.file:
+        path: ./tempconfig.ini
+        state: absent
+      become: yes

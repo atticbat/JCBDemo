@@ -10,9 +10,9 @@ services:
     image: "ubuntu:jammy"
     command: bash -c "/run_jcbdynamic.sh"
     volumes:
-      - ./run_jcbdynamic.sh:/run_jcbdynamic.sh
-      - ./config.ini:/config.ini
-      - ./jcb_dynamic/:/JCBDemo/
+      - ./volumes/run_jcbdynamic.sh:/run_jcbdynamic.sh
+      - ./volumes/config.ini:/config.ini
+      - ./volumes/jcb_dynamic/:/JCBDemo/
   static:
     container_name: "jcb_static"
     ports:
@@ -22,5 +22,5 @@ services:
     image: "ubuntu:jammy"
     command: bash -c "/run_jcbstatic.sh"
     volumes:
-      - ./run_jcbstatic.sh:/run_jcbstatic.sh
-      - ./jcb_static/:/JCBDemo/
+      - ./volumes/run_jcbstatic.sh:/run_jcbstatic.sh
+      - ./volumes/jcb_static/:/JCBDemo/

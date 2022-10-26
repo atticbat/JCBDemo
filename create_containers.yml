@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+  tasks:
+    - name: check if config exists
+      stat:
+        path: ./volumes/config.ini
+      register: config_exists
+    - name: create config if not existing
+      ansible.builtin.blockinfile:
+        path: ./volumes/config.ini
+        create: yes
+        marker: ""
+        block: |
+          [DataTotal]
+          JCBDemo=1000
+        mode: 755
+      when: config_exists.stat.exists == False
+      become: yes
+    - name: run docker-compose
+      ansible.builtin.command: docker-compose up -d
+      become: yes
+    - name: save ip of dynamic container
+      ansible.builtin.command: /bin/bash ./scripts/get_dynamic_ip.sh 
+      become: yes
