@@ -1,27 +1,15 @@
 ---
 - hosts: localhost 
-#  vars_prompt:
-#    - name: node_count
-#      prompt: enter desired amount of generated nodes
-#      default: 1000
-#      private: no
-#  tasks:
-#   - name: add container to inventory
-#     add_host:
-#       name: jcb_dynamic
-#       ansible_connection: docker
-#     changed_when: false
-#    - name: export new variable
-#      ansible.builtin.shell: export NODES={{ node_count }}
-#    - name: restart python main
-#      docker_container:
-#        name: jcb_dynamic
-#        image: ubuntu:jammy
-#        state: started
-#        restart: yes
-#        ports:
-#          - "8081:8080"
-#        env:
-#          NODES={{ node_count }}
-#  environment:
-#    - NODES={{ node_count }}
+  tasks:
+   - name: add container to inventory
+     add_host:
+       name: jcb_dynamic
+       ansible_connection: docker
+     changed_when: false
+   - name: stop dynamic container
+     community.docker.docker_container:
+       name: jcb_dynamic
+       state: stopped
+   - name: re-run create container
+     command: ansible-playbook create_containers.yml
+     become: yes
