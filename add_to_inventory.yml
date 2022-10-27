@@ -1,6 +1,8 @@
 ---
 - name: find and store IPs of active containers
   hosts: localhost
+  vars_files:
+    - ./group_vars/all
   tasks:
   - name: remove inventory file if it exists
     ansible.builtin.file:
@@ -14,12 +16,21 @@
       state: touch
       mode: '0755'
 
-  - name: create variables for ips
-    ansible.builtin.shell: docker inspect -f '{{range.NetworkSettings.Networks}}{{\.IPAddress}}{{end}}' item.name
-    register: item.ip_var
-    loop:
-      - { name: 'jcb_dynamic', ip_var: 'dynamic_ip' }
-      - { name: 'jcb_static', ip_var: 'static_ip' }
+  - name: create dynamic IP variable
+    shell: bash ./get_container_dynamic_ip.sh
+    register: dynamic_ip
+    become: yes
+
+  - set_fact:
+      dynamic_ip={{ dynamic_ip.stdout }}
+
+  - name: create static IP variable
+    shell: bash ./get_container_static_ip.sh
+    register: static_ip
+    become: yes
+
+  - set_fact:
+      static_ip={{ static_ip.stdout }}
 
   - name: set IP values of jcb_static and jcb_dynamic containers
     ansible.builtin.blockinfile:

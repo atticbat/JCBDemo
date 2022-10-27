@@ -9,32 +9,6 @@
       default: 1000
       private: no
   tasks:
-#    - name: check if dynamic container exists
-#      docker_container_info:
-#        name: jcb_dynamic
-#      register: dynamic_container
-#
-#     - name: parse only the Running part of dynamic container info
-#       ansible.builtin.set_fact:
-#         myvar: "{{ dynamic_container.stdout | from_json }}"
-#
-#        command: {{ dynamic_container }}
-#        parser:
-#          name: ansible.utils.json
-#        register: dynamic_container
-#    - name: interrupt process if exists and re-run main.py
-#      community.docker.docker_container:
-#        name: "{{ dynamic_name }}"
-#        command: bash /restart_main.sh
-#        env:
-#          NODES: "{{ node_count }}"
-#      become: yes
-#        #      when: "{{ dynamic_container | regex_search('started') }}"
-
-#    - name: debug
-#      ansible.builtin.debug:
-#        msg: "{{ dynamic_container }}"
-
     - name: create dynamic docker container
       community.docker.docker_container:
         name: "{{ dynamic_name }}"
@@ -46,7 +20,7 @@
         command: bash /run_dynamic.sh
         volumes:
           - ./scripts/restart_main.sh:/restart_main.sh
-          - ./run_container.sh:/run_dynamic.sh
+          - ./scripts/run_container.sh:/run_dynamic.sh
           - ./volumes/jcb_dynamic/:/JCBDemo/
         env:
           NODES: "{{ node_count }}"
@@ -62,8 +36,6 @@
           - "8080"
         command: bash /run_static.sh
         volumes:
-          - ./run_container.sh:/run_static.sh
+          - ./scripts/run_container.sh:/run_static.sh
           - ./volumes/jcb_static/:/JCBDemo/
       become: yes
-  
-#    - include: add_to_inventory.yml
