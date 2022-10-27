@@ -1,24 +1,27 @@
 ---
 - hosts: localhost 
-  vars_prompt:
-    - name: node_count
-      prompt: enter desired amount of generated nodes
-      default: 1000
-      private: no
-  tasks:
-    - name: create temp config
-      ansible.builtin.shell:
-        cmd: cat ./volumes/config.ini > tempconfig.ini
-    - name: edit temp config
-      ansible.builtin.lineinfile:
-        path: ./volumes/config.ini
-        regexp: '^JCBDemo='
-        line: JCBDemo={{ node_count }}
-    - name: overwrite old config
-      shell: bash "./scripts/overwrite_config.sh"
-      become: yes
-    - name: remove temp conf
-      ansible.builtin.file:
-        path: ./tempconfig.ini
-        state: absent
-      become: yes
+#  vars_prompt:
+#    - name: node_count
+#      prompt: enter desired amount of generated nodes
+#      default: 1000
+#      private: no
+#  tasks:
+#   - name: add container to inventory
+#     add_host:
+#       name: jcb_dynamic
+#       ansible_connection: docker
+#     changed_when: false
+#    - name: export new variable
+#      ansible.builtin.shell: export NODES={{ node_count }}
+#    - name: restart python main
+#      docker_container:
+#        name: jcb_dynamic
+#        image: ubuntu:jammy
+#        state: started
+#        restart: yes
+#        ports:
+#          - "8081:8080"
+#        env:
+#          NODES={{ node_count }}
+#  environment:
+#    - NODES={{ node_count }}

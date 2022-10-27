@@ -1,24 +1,36 @@
 ---
 - hosts: localhost
+  vars_prompt:
+    - name: node_count
+      prompt: enter desired amount of nodes
+      default: 1000
+      private: no
   tasks:
-    - name: check if config exists
-      stat:
-        path: ./volumes/config.ini
-      register: config_exists
-    - name: create config if not existing
-      ansible.builtin.blockinfile:
-        path: ./volumes/config.ini
-        create: yes
-        marker: ""
-        block: |
-          [DataTotal]
-          JCBDemo=1000
-        mode: 755
-      when: config_exists.stat.exists == False
+    - name: create dynamic docker container
+      community.docker.docker_container:
+        name: jcb_dynamic
+        image: ubuntu:jammy
+        ports:
+          - "8081:8080"
+        exposed_ports:
+          - '8080'
+        command: bash /run_dynamic.sh
+        volumes:
+          - ./run_container.sh:/run_dynamic.sh
+          - ./volumes/jcb_dynamic/:/JCBDemo/
+        env:
+          NODES: "{{ node_count }}"
       become: yes
-    - name: run docker-compose
-      ansible.builtin.command: docker-compose up -d
-      become: yes
-    - name: save ip of dynamic container
-      ansible.builtin.command: /bin/bash ./scripts/get_dynamic_ip.sh 
+    - name: create static docker container
+      community.docker.docker_container:
+        name: jcb_static
+        image: ubuntu:jammy
+        ports:
+          - "8080:8080"
+        exposed_ports:
+          - "8080"
+        command: bash /run_static.sh
+        volumes:
+          - ./run_container.sh:/run_static.sh
+          - ./volumes/jcb_static/:/JCBDemo/
       become: yes

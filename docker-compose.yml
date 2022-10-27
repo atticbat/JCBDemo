@@ -1,6 +1,11 @@
 version: "3.9"
 
 services:
+#  vars_prompt:
+#    - name: nodes_count
+#      prompt: enter desired amount of nodes
+#      default: 1000
+#      private: no
   dynamic:
     container_name: "jcb_dynamic"
     ports:
@@ -8,11 +13,6 @@ services:
     expose:
       - "8080"
     image: "ubuntu:jammy"
-    command: bash -c "/run_jcbdynamic.sh"
-    volumes:
-      - ./volumes/run_jcbdynamic.sh:/run_jcbdynamic.sh
-      - ./volumes/config.ini:/config.ini
-      - ./volumes/jcb_dynamic/:/JCBDemo/
   static:
     container_name: "jcb_static"
     ports:
@@ -20,7 +20,4 @@ services:
     expose:
       - "8080"
     image: "ubuntu:jammy"
-    command: bash -c "/run_jcbstatic.sh"
-    volumes:
-      - ./volumes/run_jcbstatic.sh:/run_jcbstatic.sh
-      - ./volumes/jcb_static/:/JCBDemo/
+
