@@ -1,14 +1,43 @@
 ---
-- hosts: localhost
+- name: create containers
+  hosts: localhost
+  vars_files:
+    - ./group_vars/all
   vars_prompt:
     - name: node_count
       prompt: enter desired amount of nodes
       default: 1000
       private: no
   tasks:
+#    - name: check if dynamic container exists
+#      docker_container_info:
+#        name: jcb_dynamic
+#      register: dynamic_container
+#
+#     - name: parse only the Running part of dynamic container info
+#       ansible.builtin.set_fact:
+#         myvar: "{{ dynamic_container.stdout | from_json }}"
+#
+#        command: {{ dynamic_container }}
+#        parser:
+#          name: ansible.utils.json
+#        register: dynamic_container
+#    - name: interrupt process if exists and re-run main.py
+#      community.docker.docker_container:
+#        name: "{{ dynamic_name }}"
+#        command: bash /restart_main.sh
+#        env:
+#          NODES: "{{ node_count }}"
+#      become: yes
+#        #      when: "{{ dynamic_container | regex_search('started') }}"
+
+#    - name: debug
+#      ansible.builtin.debug:
+#        msg: "{{ dynamic_container }}"
+
     - name: create dynamic docker container
       community.docker.docker_container:
-        name: jcb_dynamic
+        name: "{{ dynamic_name }}"
         image: ubuntu:jammy
         ports:
           - "8081:8080"
@@ -16,14 +45,16 @@
           - '8080'
         command: bash /run_dynamic.sh
         volumes:
+          - ./scripts/restart_main.sh:/restart_main.sh
           - ./run_container.sh:/run_dynamic.sh
           - ./volumes/jcb_dynamic/:/JCBDemo/
         env:
           NODES: "{{ node_count }}"
       become: yes
+
     - name: create static docker container
       community.docker.docker_container:
-        name: jcb_static
+        name: "{{ static_name }}"
         image: ubuntu:jammy
         ports:
           - "8080:8080"
@@ -34,3 +65,5 @@
           - ./run_container.sh:/run_static.sh
           - ./volumes/jcb_static/:/JCBDemo/
       become: yes
+  
+#    - include: add_to_inventory.yml
