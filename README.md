@@ -1,3 +1,10 @@
+My implementation relies on ansible package community.docker
+Here is a way to install it on your system:
+"
+>chmod og-rw ~/.netrc
+>ansible-galaxy collection install community.docker
+"
+
 To run: <sudo> ansible-playbook create_containers.yml
 	go on to input number of nodes you want (default 1000)
 To change node number: <sudo> ansible-playbook create_containers.yml
